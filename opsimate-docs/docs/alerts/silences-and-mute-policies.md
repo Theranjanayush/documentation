@@ -126,6 +126,8 @@ curl -X PATCH "https://opsimate.example.com/api/v1/alerts/incident-4711/silence"
 
 A successful request returns `200` with `{ "success": true, "data": { "alert": ... } }`. If the alert does not exist, the API returns `404`; an invalid request body returns `400`.
 
+The UI does not offer indefinite silencing. The daily silence reset also clears indefinite silences created through the API.
+
 ### Unsilence an alert
 
 ```http
@@ -163,7 +165,7 @@ curl -X POST "https://opsimate.example.com/api/v1/alerts/bulk" \
 
 | Field | Required | Limits |
 | --- | --- | --- |
-| `action` | yes | `silence` or `unsilence`. |
+| `action` | yes |This section documents `silence` and `unsilence`. The endpoint also accepts `resolve`, `assignOwner`, and `comment`. |
 | `ids` | one of `ids` or `query` | Array of 1–10,000 alert IDs. |
 | `query` | one of `ids` or `query` | Object with `filters`, `from`, `to`, and `search`, using the same format as the alert list. |
 | `silencedUntil` | for `silence` | A date string accepted by `Date.parse`; stored in UTC. `null` or omitted means indefinite silence until explicitly unsilenced. |
@@ -183,7 +185,7 @@ Returns the daily silence reset configuration.
 
 ```bash
 curl "https://opsimate.example.com/api/v1/alerts/silence-reset" \
-  -H "x-api-token: <your API token>"
+  -H "Authorization: Bearer <your admin JWT>"
 ```
 
 A successful request returns `200` with the current settings:
